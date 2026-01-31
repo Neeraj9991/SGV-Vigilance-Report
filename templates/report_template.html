@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>SGV Vigilance Report</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #000;
+        }
+
+        /* Header - Logo and Title */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #1a3a6b;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .logo-container {
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            height: 75px;
+            max-width: 150px;
+        }
+
+        .report-title {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #1a3a6b;
+            margin: 0;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        /* Intro Section */
+        .intro {
+            margin-bottom: 25px;
+            font-size: 10.5pt;
+        }
+
+        .intro p {
+            margin: 8px 0;
+        }
+
+        /* Site Information */
+        .site-info {
+            margin-bottom: 25px;
+            font-size: 10.5pt;
+        }
+
+        .site-info p {
+            margin: 5px 0;
+        }
+
+        .site-info strong {
+            color: #000;
+        }
+
+        /* Section Headings */
+        .section-heading {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #1a3a6b;
+            margin: 25px 0 12px 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th {
+            background-color: #1a3a6b;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #000;
+        }
+
+        table td {
+            padding: 10px 12px;
+            border: 1px solid #000;
+        }
+
+        /* Observations Box */
+        .observations-box {
+            border-left: 4px solid #f59e0b;
+            background-color: #fffbeb;
+            padding: 12px 15px;
+            margin: 15px 0;
+        }
+
+        .observations-box strong {
+            color: #000;
+        }
+
+        /* Action Taken Box */
+        .action-box {
+            border-left: 4px solid #2563eb;
+            background-color: #eff6ff;
+            padding: 12px 15px;
+            margin: 15px 0;
+        }
+
+        .action-box strong {
+            color: #000;
+        }
+
+        /* Inspector Info */
+        .inspector-info {
+            margin: 25px 0;
+            font-size: 10.5pt;
+        }
+
+        /* Images Section */
+        .images-section {
+            margin: 20px 0;
+        }
+
+        .images-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 10.5pt;
+        }
+
+        .image-item {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .image-item img {
+            width: 500px;
+            height: 375px;
+            object-fit: cover;
+            border: 1px solid #999;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 2px solid #1a3a6b;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+
+<body>
+    {% for inspection in inspections %}
+
+    <!-- Header with Logo -->
+    <div class="header">
+        <div class="logo-container">
+            {% if logo_base64 %}
+            <img src="data:image/png;base64,{{ logo_base64 }}" alt="SGV Logo" />
+            {% endif %}
+        </div>
+        <br>
+        <h1 class="report-title">SGV Vigilance Report</h1>
+    </div>
+
+
+    <!-- Site Information -->
+    <div class="site-info">
+        <p><strong>Site:</strong> {{ inspection.actual_site_name }}{% if inspection.zone %} (Zone {{ inspection.zone
+            }}{% if inspection.unit_code %}, Unit {{ inspection.unit_code }}{% endif %}){% endif %}</p>
+        <p><strong>Inspection Date & Time:</strong> {{ inspection.date }} {{ inspection.time }}</p>
+        <p><strong>Shift:</strong> {{ inspection.shift or 'N/A' }}</p>
+    </div>
+
+    <!-- Inspector Information -->
+    <div class="inspector-info">
+        <p><strong>Inspected By:</strong> {{ inspection.inspected_by or '' }}</p>
+        <!-- {% if inspection.email %}<p><strong>Email:</strong> {{ inspection.email }}</p>{% endif %} -->
+    </div>
+
+    <!-- Documentation Check -->
+    <div class="section-heading">Documentation Check</div>
+    <table>
+        <thead>
+            <tr>
+                <th>List of Documents</th>
+                <th>Maintenance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Attendance Register</td>
+                <td>{{ inspection.attendance_register or 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Handling / Taking Over Register</td>
+                <td>{{ inspection.handover_register or 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Visitors Log Register</td>
+                <td>{{ inspection.visitor_log or 'N/A' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Performance Check -->
+    <div class="section-heading">Performance Check</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Grooming</td>
+                <td>{{ inspection.grooming or 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Alertness</td>
+                <td>{{ inspection.alertness or 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Post Discipline</td>
+                <td>{{ inspection.post_discipline or 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td><strong>Overall Rating</strong></td>
+                <td><strong>{{ inspection.overall_rating or 'N/A' }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Incident Report Section -->
+    {% if inspection.incident_report %}
+    <div class="section-heading">Incident Report</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Incident Details</th>
+                <th>Action Taken</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ inspection.incident_report }}</td>
+                <td>{{ inspection.action_taken }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+
+
+    <!-- Observations - At the End -->
+    {% if inspection.observation %}
+    <div class="observations-box">
+        <strong>Observations:</strong><br />
+        {{ inspection.observation }}
+    </div>
+    {% endif %}
+
+    <!-- Images -->
+    {% if inspection.images %}
+    <div class="images-section">
+        <div class="images-label">Images:</div>
+        {% for image in inspection.images %}
+        <div class="image-item">
+            <img src="data:image/jpeg;base64,{{ image.base64 }}" alt="Inspection Image {{ loop.index }}" />
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+
+    {% if not loop.last %}
+    <div class="page-break"></div>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Footer -->
+    <div class="footer">
+        <strong>SGV SUPER SECURITY SERVICE PVT. LTD</strong><br />
+    </div>
+</body>
+
+</html>

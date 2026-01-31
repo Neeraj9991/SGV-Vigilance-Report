@@ -399,3 +399,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Python environment and project-specific
+.env
+*.pdf
+temp_images/
+venv/
