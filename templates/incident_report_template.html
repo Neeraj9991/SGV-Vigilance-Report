@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>SGV Incident Report</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #000;
+        }
+
+        /* Header - Logo and Title */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #dc2626;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .logo-container {
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            height: 75px;
+            max-width: 150px;
+        }
+
+        .report-title {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            margin-bottom: 30px;
+        }
+
+        .summary-heading {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 20px 0 15px 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th {
+            background-color: #dc2626;
+            color: white;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 10pt;
+            border: 1px solid #000;
+        }
+
+        table td {
+            padding: 8px 10px;
+            border: 1px solid #999;
+            font-size: 10pt;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        /* Simple info grid */
+        .info-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: table-row;
+        }
+
+        .info-label {
+            display: table-cell;
+            font-weight: bold;
+            padding: 5px 10px 5px 0;
+            width: 30%;
+            vertical-align: top;
+        }
+
+        .info-value {
+            display: table-cell;
+            padding: 5px 0;
+            vertical-align: top;
+        }
+
+        /* Section Headings */
+        .section-heading {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 25px 0 12px 0;
+            border-bottom: 2px solid #dc2626;
+            padding-bottom: 5px;
+        }
+
+        /* Description Box */
+        .description-box {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            border-left: 4px solid #f59e0b;
+            background-color: #fffbeb;
+            padding: 12px 15px;
+            margin: 15px 0;
+        }
+
+        .alert-box strong {
+            color: #000;
+        }
+
+        /* Info Box */
+        .info-box {
+            border-left: 4px solid #2563eb;
+            background-color: #eff6ff;
+            padding: 12px 15px;
+            margin: 15px 0;
+        }
+
+        .info-box strong {
+            color: #000;
+        }
+
+        /* Images Section */
+        .images-section {
+            margin: 20px 0;
+        }
+
+        .images-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 10.5pt;
+        }
+
+        .image-item {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .image-item img {
+            width: 500px;
+            height: 375px;
+            object-fit: cover;
+            border: 1px solid #999;
+        }
+
+        /* Video Links */
+        .video-links {
+            margin: 15px 0;
+        }
+
+        .video-links a {
+            color: #2563eb;
+            text-decoration: none;
+            display: block;
+            margin: 5px 0;
+        }
+
+        .video-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 2px solid #dc2626;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+
+        .status-open {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
+
+        .status-in-progress {
+            background-color: #fffbeb;
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .status-resolved {
+            background-color: #f0fdf4;
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with Logo -->
+    <div class="header">
+        <div class="logo-container">
+            {% if logo_base64 %}
+            <img src="data:image/png;base64,{{ logo_base64 }}" alt="SGV Logo" />
+            {% endif %}
+        </div>
+        <br>
+        <h1 class="report-title">SGV Incident Report</h1>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="summary-section">
+        <div class="summary-heading">Incident Summary Overview</div>
+        <p><strong>Report Generated:</strong> {{ report_date }} at {{ report_time }}</p>
+        <p><strong>Total Incidents:</strong> {{ total_incidents }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Zone</th>
+                    <th>Unit</th>
+                    <th>Site Name</th>
+                    <th>Category</th>
+                    <th>Brief Summary</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for incident in incidents %}
+                <tr>
+                    <td>{{ incident.zone or '-' }}</td>
+                    <td>{{ incident.unit_code or '-' }}</td>
+                    <td>{{ incident.actual_site_name or 'N/A' }}</td>
+                    <td>{{ incident.category or 'N/A' }}</td>
+                    <td>{{ incident.brief_summary if incident.brief_summary else 'No description' }}</td>
+                    <td>
+                        {% if incident.status %}
+                        {% if 'Resolved' in incident.status or 'Closed' in incident.status %}
+                        <span class="status-badge status-resolved">{{ incident.status }}</span>
+                        {% elif 'Progress' in incident.status or 'Investigating' in incident.status %}
+                        <span class="status-badge status-in-progress">{{ incident.status }}</span>
+                        {% else %}
+                        <span class="status-badge status-open">{{ incident.status }}</span>
+                        {% endif %}
+                        {% else %}
+                        <span class="status-badge status-open">Open</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Page Break after summary -->
+    <div class="page-break"></div>
+
+    <!-- Detailed Reports -->
+    {% for incident in incidents %}
+
+    <div class="section-heading">Incident Report #{{ loop.index }} - {{ incident.actual_site_name }}</div>
+
+    <!-- Basic Information -->
+    <div class="info-grid">
+        <div class="info-row">
+            <div class="info-label">Site:</div>
+            <div class="info-value">{{ incident.actual_site_name }}{% if incident.zone %} (Zone {{ incident.zone }}{% if
+                incident.unit_code %}, Unit {{ incident.unit_code }}{% endif %}){% endif %}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Location:</div>
+            <div class="info-value">{{ incident.location or 'N/A' }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Date & Time:</div>
+            <div class="info-value">{{ incident.date }} {{ incident.time }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Category:</div>
+            <div class="info-value">{{ incident.category or 'N/A' }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Status:</div>
+            <div class="info-value">
+                {% if incident.status %}
+                {% if 'Resolved' in incident.status or 'Closed' in incident.status %}
+                <span class="status-badge status-resolved">{{ incident.status }}</span>
+                {% elif 'Progress' in incident.status or 'Investigating' in incident.status %}
+                <span class="status-badge status-in-progress">{{ incident.status }}</span>
+                {% else %}
+                <span class="status-badge status-open">{{ incident.status }}</span>
+                {% endif %}
+                {% else %}
+                <span class="status-badge status-open">Open</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Reported By:</div>
+            <div class="info-value">{{ incident.reporting_person or 'N/A' }}{% if incident.designation %} ({{
+                incident.designation }}){% endif %}</div>
+        </div>
+    </div>
+
+    <!-- Incident Description -->
+    <div class="section-heading">Incident Details</div>
+    <div class="description-box">
+        {{ incident.description if incident.description else 'No description provided' }}
+    </div>
+
+    <!-- Injury Information -->
+    {% if incident.injury_reported and incident.injury_reported != 'No' %}
+    <div class="alert-box">
+        <strong>⚠️ Injury/Harm Reported:</strong> {{ incident.injury_reported }}<br />
+        {% if incident.injury_details %}
+        <strong>Details:</strong> {{ incident.injury_details }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Immediate Actions -->
+    <div class="section-heading">Immediate Response</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Action Type</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Immediate Action Taken</td>
+                <td>{{ incident.immediate_action or 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Authorities Informed</td>
+                <td>{{ incident.authorities_informed or 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>CCTV Footage Available</td>
+                <td>{{ incident.cctv_available or 'N/A' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Support Required -->
+    {% if incident.support_required and incident.support_required != 'No' %}
+    <div class="section-heading">Management Support Required</div>
+    <div class="info-box">
+        <strong>Support Required:</strong> {{ incident.support_required }}<br />
+        {% if incident.support_details %}
+        <strong>Details:</strong> {{ incident.support_details }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Photo Evidence -->
+    {% if incident.images %}
+    <div class="section-heading">Photo Evidence</div>
+    <div class="images-section">
+        <div class="images-label">{{ incident.images|length }} Photo(s) Attached:</div>
+        {% for image in incident.images %}
+        <div class="image-item">
+            <img src="data:image/jpeg;base64,{{ image.base64 }}" alt="Evidence Photo {{ loop.index }}" />
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Video Evidence -->
+    {% if incident.video_urls %}
+    <div class="section-heading">Video Evidence</div>
+    <div class="video-links">
+        <div class="images-label">{{ incident.video_urls|length }} Video(s) Available:</div>
+        {% for video_url in incident.video_urls %}
+        <a href="{{ video_url }}" target="_blank">📹 Video {{ loop.index }}: Click to view</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not loop.last %}
+    <div class="page-break"></div>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Footer -->
+    <div class="footer">
+        <strong>SGV SUPER SECURITY SERVICE PVT. LTD</strong><br />
+        Incident Report | Generated on {{ report_date }} at {{ report_time }}
+    </div>
+</body>
+
+</html>

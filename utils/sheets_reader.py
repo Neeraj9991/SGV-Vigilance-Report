@@ -12,10 +12,23 @@ from datetime import datetime
 load_dotenv()
 
 class SheetsReader:
-    def __init__(self):
-        """Initialize the sheets reader with configuration from environment variables."""
+    def __init__(self, sheet_type='monitoring'):
+        """
+        Initialize the sheets reader with configuration from environment variables.
+        
+        Args:
+            sheet_type (str): Type of sheet to read - 'monitoring' or 'incident'
+        """
         self.sheet_id = os.getenv('GOOGLE_SHEET_ID')
-        self.sheet_gid = os.getenv('SHEET_GID', '0')
+        self.sheet_type = sheet_type
+        
+        # Get the appropriate GID based on sheet type
+        if sheet_type == 'monitoring':
+            self.sheet_gid = os.getenv('MONITORING_SHEET_GID', '0')
+        elif sheet_type == 'incident':
+            self.sheet_gid = os.getenv('INCIDENT_SHEET_GID', '0')
+        else:
+            raise ValueError(f"Invalid sheet_type: {sheet_type}. Must be 'monitoring' or 'incident'")
         
         if not self.sheet_id:
             raise ValueError("GOOGLE_SHEET_ID not found in environment variables")
@@ -35,19 +48,52 @@ class SheetsReader:
             csv_url = self.get_csv_url()
             df = pd.read_csv(csv_url)
             
-            # Ensure expected columns exist
-            expected_columns = [
-                'Timestamp', 'Date', 'Time', 'Site Name',
-                'Documentation Check [Attendance Register]',
-                'Documentation Check [Handling / Taking Over Register]',
-                'Documentation Check [Visitor Log Register]',
-                'Performance Check [Grooming]',
-                'Performance Check [Alertness]',
-                'Performance Check [Post Discipline]',
-                'Performance Check [Overall Rating]',
-                'Observation', 'Inspected By', 'Images', 'Email Address',
-                'Shift', 'Incident Report', 'Action Taken'
-            ]
+            # Expected columns based on sheet type
+            if self.sheet_type == 'monitoring':
+                expected_columns = [
+                    'Timestamp', 'Date', 'Time', 'Site Name', 'Shift',
+                    'Documentation Check [Attendance Register]',
+                    'Documentation Check [Handling / Taking Over Register]',
+                    'Documentation Check [Visitor Log Register]',
+                    'Documentation Check [Incident Log]',
+                    'Performance Check [Grooming]',
+                    'Performance Check [Alertness]',
+                    'Performance Check [Post Discipline]',
+                    'Performance Check [Job Awareness]',
+                    'Any other security related observations during Quality Check',
+                    'Inspected By',
+                    'Images',
+                    'Email Address',
+                    'Incident Reported, if any during the QC/ Night Check (Provide Details)',
+                    'Sleeping cases Found (Provide Name, Emp Id / Father Name)',
+                    'Not on Duty/Post Cases Found (Provide Name, Emp Id / Father Name)',
+                    'Found Misbehaving / Drunk (Provide Name, Emp Id / Father Name)',
+                    'Were the identified cases shared with Supervisor, FO and Manager Operations for necessary action'
+                ]
+            else:
+                # Incident form columns - updated with separate photo/video fields
+                expected_columns = [
+                    'Timestamp',
+                    'Email Address',
+                    'Full Name of Reporting Person',
+                    'Designation / Role',
+                    'Date of Incident',
+                    'Time of Incident',
+                    'Site Name',
+                    'Exact Location of Incident within Site',
+                    'Category of Incident',
+                    'Detailed Description of the Incident',
+                    'Was any injury or harm reported?',
+                    'If YES, please provide details of the injury / medical condition.',
+                    'Immediate Action Taken',
+                    'Any Internal / External Authorities Informed?',
+                    'Availability of CCTV Footage',
+                    'EVIDENCE & ATTACHMENTS - Photos',
+                    'EVIDENCE & ATTACHMENTS - Videos',
+                    'Is further support or intervention required from Head Office / Management?',
+                    'If YES, mention required support',
+                    'Status'
+                ]
             
             # Check if all expected columns are present
             missing_cols = set(expected_columns) - set(df.columns)
@@ -72,8 +118,11 @@ class SheetsReader:
             pd.DataFrame: Filtered dataframe
         """
         try:
+            # Use correct date column based on sheet type
+            date_column = 'Date' if self.sheet_type == 'monitoring' else 'Date of Incident'
+            
             # Convert Date column to datetime
-            df['Date_parsed'] = pd.to_datetime(df['Date'], errors='coerce')
+            df['Date_parsed'] = pd.to_datetime(df[date_column], errors='coerce')
             
             # Filter by date range
             mask = (df['Date_parsed'] >= pd.Timestamp(start_date)) & \

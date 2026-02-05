@@ -218,6 +218,10 @@
                 <td>Visitors Log Register</td>
                 <td>{{ inspection.visitor_log or 'N/A' }}</td>
             </tr>
+            <tr>
+                <td>Incident Log</td>
+                <td>{{ inspection.incident_log or 'N/A' }}</td>
+            </tr>
         </tbody>
     </table>
 
@@ -244,14 +248,15 @@
                 <td>{{ inspection.post_discipline or 'N/A' }}</td>
             </tr>
             <tr>
-                <td><strong>Overall Rating</strong></td>
-                <td><strong>{{ inspection.overall_rating or 'N/A' }}</strong></td>
+                <td>Job Awareness</td>
+                <td>{{ inspection.job_awareness or 'N/A' }}</td>
             </tr>
         </tbody>
     </table>
 
+
     <!-- Incident Report Section -->
-    {% if inspection.incident_report %}
+    {% if inspection.incident_reported %}
     <div class="section-heading">Incident Report</div>
     <table>
         <thead>
@@ -262,19 +267,80 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ inspection.incident_report }}</td>
-                <td>{{ inspection.action_taken }}</td>
+                <td>{{ inspection.incident_reported }}</td>
+                <td>{{ inspection.action_taken or 'N/A' }}</td>
             </tr>
         </tbody>
     </table>
     {% endif %}
 
+    <!-- Employee Cases Section -->
+    <div class="section-heading">Employee Cases & Observations</div>
 
-    <!-- Observations - At the End -->
-    {% if inspection.observation %}
+    <!-- List of Employees Present -->
+    {% if inspection.employees_list %}
     <div class="observations-box">
-        <strong>Observations:</strong><br />
-        {{ inspection.observation }}
+        <strong>List of Employees on Duty:</strong><br />
+        {{ inspection.employees_list }}
+    </div>
+    {% endif %}
+
+    <!-- Cases Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Case Type</th>
+                <th>Employees Found</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if inspection.sleeping_cases %}
+            <tr>
+                <td><strong>Sleeping Cases</strong></td>
+                <td>{{ inspection.sleeping_cases }}</td>
+            </tr>
+            {% endif %}
+            {% if inspection.not_on_duty_cases %}
+            <tr>
+                <td><strong>Not on Duty/Post</strong></td>
+                <td>{{ inspection.not_on_duty_cases }}</td>
+            </tr>
+            {% endif %}
+            {% if inspection.misbehaving_drunk_cases %}
+            <tr>
+                <td><strong>Misbehaving / Drunk</strong></td>
+                <td>{{ inspection.misbehaving_drunk_cases }}</td>
+            </tr>
+            {% endif %}
+            {% if inspection.other_cases %}
+            <tr>
+                <td><strong>Other Cases</strong></td>
+                <td>{{ inspection.other_cases }}</td>
+            </tr>
+            {% endif %}
+            {% if not inspection.sleeping_cases and not inspection.not_on_duty_cases and not
+            inspection.misbehaving_drunk_cases and not inspection.other_cases %}
+            <tr>
+                <td colspan="2" style="text-align: center; color: #10b981; font-weight: bold;">No Employee Cases Found
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Cases Escalation -->
+    {% if inspection.cases_shared %}
+    <div class="action-box">
+        <strong>Cases Escalation Status:</strong><br />
+        {{ inspection.cases_shared }}
+    </div>
+    {% endif %}
+
+    <!-- Security Observations -->
+    {% if inspection.security_observations %}
+    <div class="observations-box">
+        <strong>Security Observations:</strong><br />
+        {{ inspection.security_observations }}
     </div>
     {% endif %}
 
